@@ -1,0 +1,33 @@
+cmake_minimum_required(VERSION 3.0.0)
+set(CMAKE_CXX_STANDARD 17)
+
+add_subdirectory(extern/flecs)
+add_subdirectory(extern/glad)
+set(GLFW_BUILD_EXAMPLES OFF)
+set(GLFW_BUILD_TESTS OFF)
+set(GLFW_BUILD_DOCS OFF)
+add_subdirectory(extern/glfw)
+add_subdirectory(extern/glm)
+add_subdirectory(extern/imgui)
+add_subdirectory(extern/stb)
+
+project(prncss)
+file (GLOB_RECURSE prncss_src library/**.*)
+add_library(prncss STATIC ${prncss_src})
+target_precompile_headers(prncss PUBLIC library/pch.h)
+target_link_libraries(prncss PUBLIC flecs glad glfw glm stb)
+target_include_directories(prncss PUBLIC library)
+
+project(game)
+add_executable(game game/main.cpp)
+target_link_libraries(game PUBLIC prncss)
+
+project(editor)
+file (GLOB_RECURSE editor_src editor/**.*)
+add_executable(editor ${editor_src})
+target_precompile_headers(editor PUBLIC editor/pch.h)
+target_link_libraries(editor PUBLIC glad glfw imgui prncss)
+target_include_directories(editor PUBLIC editor)
+
+file (COPY builtin DESTINATION ${PROJECT_BINARY_DIR})
+file (COPY builtin DESTINATION ${PROJECT_BINARY_DIR})
