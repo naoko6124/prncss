@@ -28,7 +28,7 @@ namespace editor
 			ImGui::PopStyleVar(3);
             
             static bool new_project_popup = false;
-            static bool open_project_popup = false;
+            static bool open_project_popup = true;
 
             if (ImGui::BeginMenuBar())
             {
@@ -94,7 +94,9 @@ namespace editor
             if (new_project_popup)
             {
                 static bool error_folder_not_empty = false;
-                ImGui::Begin("new project");
+                ImGui::SetNextWindowSize(ImVec2(600, 400));
+                ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f,0.5f));
+                ImGui::Begin("new project", &new_project_popup, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking);
                 static std::string project_name = "project1";
                 ImGui::InputText("name", &project_name);
                 std::string project_path = std::filesystem::current_path().string() + "\\projects\\" + project_name + "\\";
@@ -127,38 +129,49 @@ namespace editor
                 {
                     ImGui::Text("error: folder not empty");
                 }
-                if (ImGui::Button("close"))
-                {
-                    new_project_popup = false;
-                }
                 ImGui::End();
             }
             if (open_project_popup)
             {
                 static bool error_there_is_not_project = false;
-                ImGui::Begin("open project");
-                static std::string project_name = "";
-                ImGui::InputText("name", &project_name);
-                if (ImGui::Button("open"))
+                ImGui::SetNextWindowSize(ImVec2(600, 400));
+                ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f,0.5f));
+                ImGui::Begin("open project", &open_project_popup, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking);
+                std::string projects_path = std::filesystem::current_path().string() + "\\projects";
+                std::filesystem::create_directories(projects_path);
+
+                ImGui::Columns(2);
+
+                static std::string project_name;
+
+                for (auto& p_path : std::filesystem::directory_iterator(projects_path))
                 {
-                    std::string project_path = std::filesystem::current_path().string() + "\\projects\\" + project_name + "\\";
-                    if (std::filesystem::exists(project_path + "\\project.scr"))
+                    std::string current_project_name = p_path.path().filename().string();
+                    if (ImGui::Selectable(current_project_name.c_str(), project_name == current_project_name))
+                        project_name = current_project_name;
+                }
+                ImGui::NextColumn();
+                if (project_name.empty())
+                {
+                    ImGui::Text("select a project");
+                }
+                else
+                {
+                    ImGui::Text("project name: %s", project_name.c_str());
+                    if (ImGui::Button("open"))
                     {
-                        open_project_popup = false;
-                        glob_project_path = project_path;
-                        glob_project_name = project_name;
+                        std::string project_path = std::filesystem::current_path().string() + "\\projects\\" + project_name + "\\";
+                        if (std::filesystem::exists(project_path + "\\project.scr"))
+                        {
+                            open_project_popup = false;
+                            glob_project_path = project_path;
+                            glob_project_name = project_name;
+                        }
+                        else
+                            error_there_is_not_project = true;
                     }
-                    else
-                        error_there_is_not_project = true;
                 }
-                if (error_there_is_not_project)
-                {
-                    ImGui::Text("error: there is no project with this name");
-                }
-                if (ImGui::Button("close"))
-                {
-                    open_project_popup = false;
-                }
+                ImGui::Columns(1);
                 ImGui::End();
             }
         }

@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 set(CMAKE_CXX_STANDARD 17)
 
+add_subdirectory(extern/assimp)
 add_subdirectory(extern/flecs)
 add_subdirectory(extern/glad)
 set(GLFW_BUILD_EXAMPLES OFF)
@@ -15,7 +16,7 @@ project(prncss)
 file (GLOB_RECURSE prncss_src library/**.*)
 add_library(prncss STATIC ${prncss_src})
 target_precompile_headers(prncss PUBLIC library/pch.h)
-target_link_libraries(prncss PUBLIC flecs glad glfw glm stb)
+target_link_libraries(prncss PUBLIC assimp flecs glad glfw glm stb)
 target_include_directories(prncss PUBLIC library)
 
 project(game)

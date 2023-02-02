@@ -17,6 +17,14 @@ namespace prncss
             m_shader->set_vertex(assets::load_file("builtin/default.vsh"));
             m_shader->set_fragment(assets::load_file("builtin/default.fsh"));
             world.system<transform, mesh>("render").each([this](transform& t, mesh& m){
+                static int once = 0;
+                if (once < 6)
+                {
+                    once++;
+                    printf("%s\n", m.mesh_data.name.c_str());
+                    printf(" -vertices: %d\n", m.mesh_data.vertices.size());
+                    printf(" -texture: %s\n", m.mesh_data.texture.c_str());
+                }
                 m_shader->set_mat4("model", t.get_matrix());
                 m.draw();
             });

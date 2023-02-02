@@ -12,6 +12,14 @@ namespace prncss
             glm::vec3 normal;
             glm::vec2 uv;
         };
+        struct data
+        {
+            std::string name;
+            std::vector<mesh::vertex> vertices;
+            std::vector<uint32_t> indices;
+            std::string texture = "builtin/default.png";
+        };
+        data mesh_data;
     public:
         mesh()
         {
@@ -21,7 +29,7 @@ namespace prncss
         {
             glDeleteVertexArrays(1, &vertex_array);
         }
-        void set_vertices(std::vector<vertex>& vertices)
+        void set_vertices(const std::vector<vertex>& vertices)
         {
             glBindVertexArray(vertex_array);
             unsigned int vertex_buffer;
@@ -38,7 +46,7 @@ namespace prncss
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glDeleteBuffers(1, &vertex_buffer);
         }
-        void set_indices(std::vector<uint32_t>& indices)
+        void set_indices(const std::vector<uint32_t>& indices)
         {
             size = indices.size();
             glBindVertexArray(vertex_array);
@@ -73,6 +81,7 @@ namespace prncss
             glBindVertexArray(vertex_array);
             glBindTexture(GL_TEXTURE_2D, texture);
             glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0);
+            glBindTexture(GL_TEXTURE_2D, 0);
             glBindVertexArray(0);
         }
     private:

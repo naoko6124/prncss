@@ -44,40 +44,24 @@ namespace prncss
                     t->rotation.y += ev->get_offset_x() * 0.1f;
                     break;
                 }
+                default:
+                    break;
             }
         }
         void init()
         {
-            auto e = m_scene.create_entity();
-            e.set([](transform& t, mesh& m){
-                std::vector<mesh::vertex> vertices = {
-                    { { -1,  1,  1 }, { -2,  2,  2 }, { 0, 1 } },
-                    { {  1,  1,  1 }, {  2,  2,  2 }, { 1, 1 } },
-                    { { -1, -1,  1 }, { -2, -2,  2 }, { 0, 0 } },
-                    { {  1, -1,  1 }, {  2, -2,  2 }, { 1, 0 } },
-                    { { -1,  1, -1 }, { -2,  2, -2 }, { 1, 1 } },
-                    { {  1,  1, -1 }, {  2,  2, -2 }, { 0, 1 } },
-                    { { -1, -1, -1 }, { -2, -2, -2 }, { 1, 0 } },
-                    { {  1, -1, -1 }, {  2, -2, -2 }, { 0, 0 } }
-                };
-                m.set_vertices(vertices);
-
-                
-                std::vector<uint32_t> indices = {
-                    0, 1, 2, 2, 3, 1,
-                    4, 5, 6, 6, 7, 5,
-                    1, 5, 3, 3, 7, 5,
-                    0, 4, 2, 2, 6, 4,
-                    4, 5, 0, 0, 1, 5,
-                    6, 7, 2, 2, 3, 7
-                };
-                m.set_indices(indices);
-
-                m.set_texture("builtin/tex.png");
-
-                t.position = { 0, 0, 0 };
-                t.rotation = { 0, 0, 0};
-            });
+            assets::prefab prefab = assets::load_prefab("builtin/model/untitled.glb");
+            for (auto& m_data : prefab.meshes)
+            {
+                m_data.texture = "builtin/model/texture.png";
+                auto ent = m_scene.create_entity();
+                ent.set([m_data](transform& t, mesh& m){
+                    m.mesh_data = m_data;
+                    m.set_vertices(m_data.vertices);
+                    m.set_indices(m_data.indices);
+                    m.set_texture(m_data.texture.c_str());
+                });
+            }
         }
         void update(float delta_time)
         {

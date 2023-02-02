@@ -4,6 +4,10 @@
 #include <sstream>
 #include <functional>
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #include <flecs.h>
 
 #include <glad/gl.h>
