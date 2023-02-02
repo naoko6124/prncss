@@ -32,6 +32,21 @@ namespace editor
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             current_scene->load();
+            {
+                auto prefab =  prncss::assets::load_prefab("builtin/model/untitled.glb");
+                for (auto& m_data : prefab.meshes)
+                {
+                    m_data.texture = "builtin/model/texture.png";
+                    auto ent = current_scene->create_entity();
+                    ent.set([m_data](prncss::transform& t, prncss::mesh& m){
+                        m.mesh_data = m_data;
+                        m.set_vertices(m_data.vertices);
+                        m.set_indices(m_data.indices);
+                        m.set_texture(m_data.texture.c_str());
+                        t.position = { 0, -1.5, -2 };
+                    });
+                }
+            }
         }
         ~scene()
         {
